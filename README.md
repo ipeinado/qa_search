@@ -5,7 +5,9 @@ This is a module developed specifically for the GPII Unified Listing. The module
 
 ## Installation
 
-Download this folder and add it to ```/sites/modules/all```
+Download this folder and add it to ```/sites/modules/all```.
+
+Then, enable it in ``àdmin/modules```. Don't forget to clear caches after enabling the module!
 
 
 
