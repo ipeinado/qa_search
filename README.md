@@ -7,7 +7,7 @@ This is a module developed specifically for the GPII Unified Listing. The module
 
 Download this folder and add it to ```/sites/modules/all```.
 
-Then, enable it in ``àdmin/modules```. Don't forget to clear caches after enabling the module!
+Then, enable it in ```admin/modules```. Don't forget to clear caches after enabling the module!
 
 
 
