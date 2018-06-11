@@ -7,3 +7,6 @@ dependencies[] = drupal:taxonomy
 files[] = 'qa_search.module'
 files[] = 'qa_search.main_page.inc'
 files[] = 'qa_search.term_page.inc'
+files[] = 'templates/category.tpl.php'
+files[] = 'templates/main_page.tpl.php'
+files[] = 'templates/term_page.tpl.php'

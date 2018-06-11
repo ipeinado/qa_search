@@ -4,9 +4,9 @@
  */
 function qa_search_permission() {
 	return array(
-		'administer qa search' => array(
-			'title' => t('Administer Q&A Search'),
-			'description' => t('Perform administration tasks for Q&A module'),
+		'view qa search' => array(
+			'title' => t('View Q&A Search Pages'),
+			'description' => t('View the Question and Answer search pages'),
 		),
 	);
 }
@@ -22,7 +22,7 @@ function qa_search_menu() {
 		'description' => 'Home page for looking up using questions and answers',
 		'page callback' => 'qa_main_page',
 		'access arguments' => array(
-			'administer qa search',
+			'view qa search',
 		),
 		'file' => 'qa_search.main_page.inc',
 	);
@@ -33,7 +33,7 @@ function qa_search_menu() {
 		'page callback' => 'qa_term_page',
 		'page arguments' => array(1),
 		'access arguments' => array(
-			'administer qa search',
+			'view qa search',
 		),
 		'file' => 'qa_search.term_page.inc',
 	);
@@ -48,26 +48,53 @@ function qa_search_theme($existing, $type, $theme, $path) {
 	return array(
 		'category' => array(
 			'variables' => array(
-				'name' => NULL,
+				'term' => NULL,
 			),
+			'template' => 'category',
+			'path' => drupal_get_path('module', 'qa_search') . '/templates',
+		),
+		'qa_search_main_page' => array(
+			'variables' => array(
+				'intro_text' => NULL,
+				'categories' => NULL
+			),
+			'template' => 'main_page',
+			'path' => drupal_get_path('module', 'qa_search') . '/templates',
+		),
+		'qa_search_term_page' => array(
+			'variables' => array(
+				'total_url' => NULL,
+				'total_nodes' => NULL,
+				'question' => NULL,
+				'categories' => NULL,
+			),
+			'template' => 'term_page',
+			'path' => drupal_get_path('module', 'qa_search') . '/templates',
+			'preprocess functions' => array('qa_search_preprocess_qa_search_term_page'),
 		),
 	);
 }
 
-function theme_category($variables) {
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function qa_search_preprocess_category(&$variables) {
 	$term = $variables['term'];
-	$node_count = _count_nodes_by_term($term->tid);
-	$url = _get_term_url($term);
+	$variables['term_name'] = $term->name;
+	$variables['node_count'] = _count_nodes_by_term($term->tid);
+	$variables['url'] = _get_term_url($term);
+	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
+}
 
-	$html = '';
-	$html .= '<a href="'. $url . '"';
-	$html .= ' title="' . $term->field_short_description['und'][0]['value'] . '"';
-	$html .= ' data-toggle="tooltip" data-placement="top">';
-	$html .= $variables['term']->name;
-	$html .= '</a> ';
-	$html .= '(' . $node_count . ')';
-	
-	return $html; 
+/**
+* Implements template_preprocess_page().
+*/
+
+function qa_search_preprocess_page(&$variables) {
+	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__qa_search__%') {
+		$breadcrumb = $variables['page']['content']['system_main']['breadcrumb'];
+		$variables['breadcrumb'] = theme('item_list', array('items' => $breadcrumb, 'type' => 'ol', 'attributes' => array('class' => 'breadcrumb')));
+	}
 }
 
 /* Auxiliary functions */
@@ -91,7 +118,7 @@ function _get_term_url($term) {
 	if (empty(taxonomy_get_children($term->tid))) {
 		$url = _get_recursive_url($term);
 	} else {
-		$url = '/mytest/qa_search/' . $term->tid;
+		$url = '/qa_search/' . $term->tid;
 	}
 
 	return $url;

@@ -1,0 +1,1 @@
+<a href="<?php echo $url; ?>" title="<?php echo $short_description; ?>" data-toggle="tooltip" data-placement="top"><?php echo $term_name; ?></a> (<?php echo $node_count; ?>)

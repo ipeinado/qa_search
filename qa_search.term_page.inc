@@ -8,35 +8,8 @@ function qa_term_page($term) {
 
 	drupal_set_title($current_term->name);
 
-	$content = array();
-
-	$link = '<a href="' . _get_recursive_url($current_term) . '">' . t('Show me everything below') . '</a>';
-	$link .= ' (' . _count_nodes_by_term($current_term->tid) . ')';
-
-	$breadcrumb_array = _build_breadcrumb($current_term);
-
-	$content['breadcrumb'] = array(
-		'#theme' => 'item_list', 
-		'#items' => $breadcrumb_array,
-		'#type' => 'ol',
-		'#attributes' => array(
-			'class' => 'breadcrumb',
-		),
-	);
-
-	$content['question'] = array(
-		'#type' => 'markup',
-		'#markup' => $question,
-		'#prefix' => '<div>',
-		'#suffix' => '</div>',
-	);
-
-	$content['show_everything'] = array(
-		'#type' =>'markup',
-		'#markup' => $link,
-		'#prefix' => '<p>',
-		'#suffix' => '</p>',  
-	);
+	$total_url = _get_recursive_url($current_term);
+	$total_nodes = _count_nodes_by_term($current_term->tid);
 
 	$categories = array();
 	
@@ -44,9 +17,16 @@ function qa_term_page($term) {
 		$categories[] = theme('category', array('term' => $term));
 	}
 
-	$content['categories_list'] = array(
-		'#theme' => 'item_list',
-		'#items' => $categories,
+	$content = array();
+
+	$content['breadcrumb'] = $breadcrumb;
+
+	$content['main_content'] = array(
+		'#theme' => 'qa_search_term_page',
+		'#total_url' => $total_url,
+		'#total_nodes' => $total_nodes,
+		'#question' => $question,
+		'#categories' => $categories,
 	);
 
 	return $content;
@@ -58,7 +38,7 @@ function _build_breadcrumb($term) {
 	$first_term = TRUE;
 
 	foreach($parents as $parent) {
-		$term_url = '/mytest/qa_search/' . $parent->tid;
+		$term_url = '/qa_search/' . $parent->tid;
 
 		if ($first_term) {
 			array_unshift($breadcrumb_array, $parent->name);
@@ -68,7 +48,7 @@ function _build_breadcrumb($term) {
 		}
 		
 	}
-	array_unshift($breadcrumb_array, l('Question & Answer Search', '/mytest/qa_search'));
+	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qa_search'));
 
 	return $breadcrumb_array;
 }
