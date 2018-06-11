@@ -1,0 +1,111 @@
+<?php
+/**
+ * Implements hook_permission()
+ */
+function qa_search_permission() {
+	return array(
+		'administer qa search' => array(
+			'title' => t('Administer Q&A Search'),
+			'description' => t('Perform administration tasks for Q&A module'),
+		),
+	);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function qa_search_menu() {
+	$items = array();
+
+	$items['qa_search'] = array(
+		'title' => 'What is it that you are looking for?',
+		'description' => 'Home page for looking up using questions and answers',
+		'page callback' => 'qa_main_page',
+		'access arguments' => array(
+			'administer qa search',
+		),
+		'file' => 'qa_search.main_page.inc',
+	);
+
+	$items['qa_search/%'] = array(
+		'title' => 'Term page',
+		'description' => 'Terms with children',
+		'page callback' => 'qa_term_page',
+		'page arguments' => array(1),
+		'access arguments' => array(
+			'administer qa search',
+		),
+		'file' => 'qa_search.term_page.inc',
+	);
+
+	return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function qa_search_theme($existing, $type, $theme, $path) {
+	return array(
+		'category' => array(
+			'variables' => array(
+				'name' => NULL,
+			),
+		),
+	);
+}
+
+function theme_category($variables) {
+	$term = $variables['term'];
+	$node_count = _count_nodes_by_term($term->tid);
+	$url = _get_term_url($term);
+
+	$html = '';
+	$html .= '<a href="'. $url . '"';
+	$html .= ' title="' . $term->field_short_description['und'][0]['value'] . '"';
+	$html .= ' data-toggle="tooltip" data-placement="top">';
+	$html .= $variables['term']->name;
+	$html .= '</a> ';
+	$html .= '(' . $node_count . ')';
+	
+	return $html; 
+}
+
+/* Auxiliary functions */
+function _get_recursive_url($term) {
+	$url_products = '';
+	$parents_ids = array();
+	$parents = taxonomy_get_parents_all($term->tid);
+	
+	foreach($parents as $parent) {
+		array_unshift($parents_ids, $parent->tid);
+	}
+	
+	foreach ($parents_ids as $parent_id) {
+		$url_products .= '&products=' . $parent_id;
+	}
+	
+	return '/search/advanced/#!/?page=1' . $url_products . '&query=';
+}
+
+function _get_term_url($term) {
+	if (empty(taxonomy_get_children($term->tid))) {
+		$url = _get_recursive_url($term);
+	} else {
+		$url = '/mytest/qa_search/' . $term->tid;
+	}
+
+	return $url;
+}
+
+function _count_nodes_by_term($term) {
+	$query = db_select('taxonomy_index', 't');
+	$query->condition('tid', $term, '=');
+	$query->addExpression('COUNT(*)', 'count_nodes');
+	$query->join('node', 'n', 't.nid = n.nid');
+	$query->condition('type', 'product', '=');
+	$query->condition('status', 1, '=');
+
+	$results = $query->execute()->fetchField();
+
+	return $results;
+}

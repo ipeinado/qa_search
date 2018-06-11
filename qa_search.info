@@ -1,0 +1,9 @@
+name = Question & Answer Search
+description = Search products in the GPII UL using guided questions
+core = 7.x
+
+dependencies[] = drupal:taxonomy
+
+files[] = 'qa_search.module'
+files[] = 'qa_search.main_page.inc'
+files[] = 'qa_search.term_page.inc'
