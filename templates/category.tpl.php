@@ -1,1 +1,9 @@
-<a href="<?php echo $url; ?>" title="<?php echo $short_description; ?>" data-toggle="tooltip" data-placement="top"><?php echo $term_name; ?></a> (<?php echo $node_count; ?>)
+<a href="<?php echo $url; ?>" title="<?php echo $short_description; ?>">
+<?php echo $term_name; ?></a> 
+(<?php echo $node_count; ?>)
+<?php if (!empty($short_description)): ?>
+	- <?php echo $short_description; ?>
+<?php endif; ?>
+<?php if (isset($edit_term_link)): ?>
+	[[[ <?php print $edit_term_link; ?> ]]]
+<?php endif; ?> 

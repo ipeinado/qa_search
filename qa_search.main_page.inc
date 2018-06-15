@@ -13,13 +13,6 @@ function qa_main_page() {
 		$categories[] = theme('category', array('term' => $term));
 	}
 
-	// $content['categories_list'] = array(
-	// 	'#theme' => 'item_list',
-	// 	'#items' => $categories,
-	// );
-
-	// return $content;
-
 	$content[] = array(
 		'#theme' => 'qa_search_main_page',
 		'#intro_text' => $intro_text,

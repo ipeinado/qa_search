@@ -1,6 +1,7 @@
 <?php
 
 function qa_term_page($term) {
+
 	$current_term = taxonomy_term_load($term);
 	$current_term_id = $current_term->tid;
 	$question = $current_term->field_qasearch_question['und'][0]['value'];
@@ -14,15 +15,22 @@ function qa_term_page($term) {
 	$categories = array();
 	
 	foreach($subterms as $term) {
+		
 		$categories[] = theme('category', array('term' => $term));
 	}
 
 	$content = array();
 
+	$breadcrumb = _build_breadcrumb($current_term);
 	$content['breadcrumb'] = $breadcrumb;
+
+	if (user_access('administer taxonomy')) {
+		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default', 'target' => '_blank')));
+	}
 
 	$content['main_content'] = array(
 		'#theme' => 'qa_search_term_page',
+		'#edit_link' => $edit_link,
 		'#total_url' => $total_url,
 		'#total_nodes' => $total_nodes,
 		'#question' => $question,
@@ -38,7 +46,7 @@ function _build_breadcrumb($term) {
 	$first_term = TRUE;
 
 	foreach($parents as $parent) {
-		$term_url = '/qa_search/' . $parent->tid;
+		$term_url = '/qasearch/' . $parent->tid;
 
 		if ($first_term) {
 			array_unshift($breadcrumb_array, $parent->name);
@@ -48,7 +56,7 @@ function _build_breadcrumb($term) {
 		}
 		
 	}
-	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qa_search'));
+	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qasearch'));
 
 	return $breadcrumb_array;
 }

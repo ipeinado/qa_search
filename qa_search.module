@@ -17,7 +17,7 @@ function qa_search_permission() {
 function qa_search_menu() {
 	$items = array();
 
-	$items['qa_search'] = array(
+	$items['qasearch'] = array(
 		'title' => 'What is it that you are looking for?',
 		'description' => 'Home page for looking up using questions and answers',
 		'page callback' => 'qa_main_page',
@@ -27,7 +27,7 @@ function qa_search_menu() {
 		'file' => 'qa_search.main_page.inc',
 	);
 
-	$items['qa_search/%'] = array(
+	$items['qasearch/%'] = array(
 		'title' => 'Term page',
 		'description' => 'Terms with children',
 		'page callback' => 'qa_term_page',
@@ -63,6 +63,7 @@ function qa_search_theme($existing, $type, $theme, $path) {
 		),
 		'qa_search_term_page' => array(
 			'variables' => array(
+				'edit_link' => NULL,
 				'total_url' => NULL,
 				'total_nodes' => NULL,
 				'question' => NULL,
@@ -84,6 +85,9 @@ function qa_search_preprocess_category(&$variables) {
 	$variables['node_count'] = _count_nodes_by_term($term->tid);
 	$variables['url'] = _get_term_url($term);
 	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
+	if (user_access('administer taxonomy')) {
+		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('target' => '_blank'),));
+	}
 }
 
 /**
@@ -91,7 +95,7 @@ function qa_search_preprocess_category(&$variables) {
 */
 
 function qa_search_preprocess_page(&$variables) {
-	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__qa_search__%') {
+	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__qasearch__%') {
 		$breadcrumb = $variables['page']['content']['system_main']['breadcrumb'];
 		$variables['breadcrumb'] = theme('item_list', array('items' => $breadcrumb, 'type' => 'ol', 'attributes' => array('class' => 'breadcrumb')));
 	}
@@ -118,7 +122,7 @@ function _get_term_url($term) {
 	if (empty(taxonomy_get_children($term->tid))) {
 		$url = _get_recursive_url($term);
 	} else {
-		$url = '/qa_search/' . $term->tid;
+		$url = '/qasearch/' . $term->tid;
 	}
 
 	return $url;
