@@ -86,7 +86,7 @@ function qa_search_preprocess_category(&$variables) {
 	$variables['url'] = _get_term_url($term);
 	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
 	if (user_access('administer taxonomy')) {
-		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('target' => '_blank'),));
+		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('target' => '_blank'), 'query' => array('destination' => 'admin/structure/taxonomy/product_category1'),));
 	}
 }
 
@@ -115,7 +115,7 @@ function _get_recursive_url($term) {
 		$url_products .= '&products=' . $parent_id;
 	}
 	
-	return '/search/advanced/#!/?page=1' . $url_products . '&query=';
+	return '/search/power/#!/?page=1' . $url_products . '&query=';
 }
 
 function _get_term_url($term) {

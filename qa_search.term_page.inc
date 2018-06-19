@@ -25,7 +25,7 @@ function qa_term_page($term) {
 	$content['breadcrumb'] = $breadcrumb;
 
 	if (user_access('administer taxonomy')) {
-		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default', 'target' => '_blank')));
+		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default', 'target' => '_blank'), 'query' => array('destination' => 'admin/structure/taxonomy/product_category1',)));
 	}
 
 	$content['main_content'] = array(
