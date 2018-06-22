@@ -73,6 +73,14 @@ function qa_search_theme($existing, $type, $theme, $path) {
 			'path' => drupal_get_path('module', 'qa_search') . '/templates',
 			'preprocess functions' => array('qa_search_preprocess_qa_search_term_page'),
 		),
+		'qa_search_nodes' => array(
+			'variables' => array(
+				'title' => NULL,
+				'nodes' => NULL,
+			),
+			'template' => 'nodes',
+			'path' => drupal_get_path('module', 'qa_search') . '/templates',
+		),
 	);
 }
 
@@ -81,12 +89,15 @@ function qa_search_theme($existing, $type, $theme, $path) {
  */
 function qa_search_preprocess_category(&$variables) {
 	$term = $variables['term'];
+	$url = _get_term_url($term);
+	$parent_id = key(taxonomy_get_parents($term->tid));
 	$variables['term_name'] = $term->name;
 	$variables['node_count'] = _count_nodes_by_term($term->tid);
-	$variables['url'] = _get_term_url($term);
+	$variables['url'] = $url;
+	
 	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
 	if (user_access('administer taxonomy')) {
-		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('target' => '_blank'), 'query' => array('destination' => 'admin/structure/taxonomy/product_category1'),));
+		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('query' => array('destination' => '/qasearch/' . $parent_id),));
 	}
 }
 
