@@ -56,7 +56,7 @@ function qa_search_theme($existing, $type, $theme, $path) {
 		'qa_search_main_page' => array(
 			'variables' => array(
 				'intro_text' => NULL,
-				'categories' => NULL
+				'categories' => NULL,
 			),
 			'template' => 'main_page',
 			'path' => drupal_get_path('module', 'qa_search') . '/templates',
@@ -94,20 +94,26 @@ function qa_search_preprocess_category(&$variables) {
 	$variables['term_name'] = $term->name;
 	$variables['node_count'] = _count_nodes_by_term($term->tid);
 	$variables['url'] = $url;
-	
+	$variables['no_children'] = empty(taxonomy_get_children($term->tid));
 	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
+
 	if (user_access('administer taxonomy')) {
-		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('query' => array('destination' => '/qasearch/' . $parent_id),));
+		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default btn-sm', 'style' => 'padding: 0 5px; margin-left: 0.5em;',), 'query' => array('destination' => '/qasearch/' . $parent_id),));
 	}
 }
 
 /**
 * Implements template_preprocess_page().
 */
-
 function qa_search_preprocess_page(&$variables) {
 	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__qasearch__%') {
-		$breadcrumb = $variables['page']['content']['system_main']['breadcrumb'];
+		// $breadcrumb = $variables['page']['content']['system_main']['breadcrumb'];
+		// dsm($variables);
+
+		$path = request_path();
+		$term_id = intval(explode("/", $path)[1]);
+		$breadcrumb = _build_breadcrumb($term_id);
+
 		$variables['breadcrumb'] = theme('item_list', array('items' => $breadcrumb, 'type' => 'ol', 'attributes' => array('class' => 'breadcrumb')));
 	}
 }
@@ -132,8 +138,10 @@ function _get_recursive_url($term) {
 function _get_term_url($term) {
 	if (empty(taxonomy_get_children($term->tid))) {
 		$url = _get_recursive_url($term);
+		$no_children = true;
 	} else {
 		$url = '/qasearch/' . $term->tid;
+		$no_children = false;
 	}
 
 	return $url;
@@ -150,4 +158,25 @@ function _count_nodes_by_term($term) {
 	$results = $query->execute()->fetchField();
 
 	return $results;
+}
+
+function _build_breadcrumb($term) {
+	$parents = taxonomy_get_parents_all($term);
+	$breadcrumb_array = array();
+	$first_term = TRUE;
+
+	foreach($parents as $parent) {
+		$term_url = '/qasearch/' . $parent->tid;
+
+		if ($first_term) {
+			array_unshift($breadcrumb_array, $parent->name);
+			$first_term = FALSE;
+		} else {
+			array_unshift($breadcrumb_array, l($parent->name, $term_url));
+		}
+		
+	}
+	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qasearch'));
+
+	return $breadcrumb_array;
 }

@@ -4,12 +4,10 @@
 	<div class="question"><?php echo $question; ?></div>
 <?php endif; ?>
 
-<p><a href="<?php echo $total_url; ?>"><?php print t('Show me everything below'); ?></a> (<?php echo $total_nodes; ?>)</p>
+<p><strong><a href="<?php echo $total_url; ?>"><?php print t('Show me everything below'); ?></a></strong> (<?php echo $total_nodes; ?>)</p>
 
 <ul class="categories-list">
 	<?php foreach($categories as $category): ?>
-		<li>
-			<?php print $category; ?>
-		</li>
+		<?php print $category; ?>
 	<?php endforeach; ?>
 </ul>

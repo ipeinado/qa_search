@@ -1,5 +1,4 @@
 <?php
-
 function qa_term_page($term) {
 
 	$current_term = taxonomy_term_load($term);
@@ -14,8 +13,6 @@ function qa_term_page($term) {
 		$nids = array_diff($nids, $subnids);
 	}
 
-	drupal_set_title($current_term->name);
-
 	$total_url = _get_recursive_url($current_term);
 	$total_nodes = _count_nodes_by_term($current_term->tid);
 
@@ -25,15 +22,20 @@ function qa_term_page($term) {
 		$categories[] = theme('category', array('term' => $term));
 	}
 
-	$content = array();
+	// Add page breadcrumb
+	// $breadcrumb = _build_breadcrumb($current_term);
+	// $breadcrumb = array('something', 'other thing');
+	// $content['breadcrumb'] = $breadcrumb;
 
-	$breadcrumb = _build_breadcrumb($current_term);
-	$content['breadcrumb'] = $breadcrumb;
+	// Add page title
+	drupal_set_title($current_term->name);
 
+	// Add edit link if user can administer taxonomy
 	if (user_access('administer taxonomy')) {
-		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default',), 'query' => array('destination' => '/qasearch/' . $current_term->tid,)));
+		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-success',), 'query' => array('destination' => '/qasearch/' . $current_term->tid,)));
 	}
 
+	// Add content
 	$content['main_content'] = array(
 		'#theme' => 'qa_search_term_page',
 		'#edit_link' => $edit_link,
@@ -43,9 +45,9 @@ function qa_term_page($term) {
 		'#categories' => $categories,
 	);
 
-	$nodes_count = count($nids);
+	$node_count = count($nids);
 	$nodes = node_load_multiple($nids);
-	$others_title = t($nodes_count . ' products tagged only with "' . $current_term->name . '"');
+	$others_title = t($node_count . ' products tagged only with "' . $current_term->name . '"');
 
 	$content['nodes'] = array(
 		'#theme' => 'qa_search_nodes',
@@ -54,25 +56,4 @@ function qa_term_page($term) {
 	);
 
 	return $content;
-}
-
-function _build_breadcrumb($term) {
-	$parents = taxonomy_get_parents_all($term->tid);
-	$breadcrumb_array = array();
-	$first_term = TRUE;
-
-	foreach($parents as $parent) {
-		$term_url = '/qasearch/' . $parent->tid;
-
-		if ($first_term) {
-			array_unshift($breadcrumb_array, $parent->name);
-			$first_term = FALSE;
-		} else {
-			array_unshift($breadcrumb_array, l($parent->name, $term_url));
-		}
-		
-	}
-	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qasearch'));
-
-	return $breadcrumb_array;
 }

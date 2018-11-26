@@ -10,3 +10,5 @@ files[] = 'qa_search.term_page.inc'
 files[] = 'templates/category.tpl.php'
 files[] = 'templates/main_page.tpl.php'
 files[] = 'templates/term_page.tpl.php'
+
+stylesheets[all][] = 'css/styles.css'
