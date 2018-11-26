@@ -129,7 +129,7 @@ function _get_recursive_url($term) {
 	}
 	
 	foreach ($parents_ids as $parent_id) {
-		$url_products .= '&products=' . $parent_id;
+		$url_products .= '&product_category=' . $parent_id;
 	}
 	
 	return '/search/power/#!/?page=1' . $url_products . '&query=';
@@ -152,8 +152,11 @@ function _count_nodes_by_term($term) {
 	$query->condition('tid', $term, '=');
 	$query->addExpression('COUNT(*)', 'count_nodes');
 	$query->join('node', 'n', 't.nid = n.nid');
+	$query->join('field_data_field_status', 's', 't.nid = s.entity_id');
 	$query->condition('type', 'product', '=');
 	$query->condition('status', 1, '=');
+	$query->condition('field_status_value', '3', '!='); // exclude deleted 
+	$query->condition('field_status_value', '2', '!='); // exclude discontinued
 
 	$results = $query->execute()->fetchField();
 
