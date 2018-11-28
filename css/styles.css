@@ -5,10 +5,15 @@
 }
 
 .categories-list > li {
+  position: relative;
   margin-bottom: .5em;
+  padding-left: 16px;
 }
   
 .categories-list > li.children:before {
+  position: absolute;
+  left: 0;
+  top: 4px;
   content: '\25B6';
   font-size: .65em;
   margin-right: 1.25em;
@@ -16,6 +21,9 @@
 }
 
 .categories-list > li.no-children:before {
+  position: absolute;
+  left: 0;
+  top: 2px;
   content: '\25CF';
   font-size: .85em;
   margin-right: 1em;
