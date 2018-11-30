@@ -12,3 +12,5 @@ files[] = 'templates/main_page.tpl.php'
 files[] = 'templates/term_page.tpl.php'
 
 stylesheets[all][] = 'css/styles.css'
+
+#Testing git integration
