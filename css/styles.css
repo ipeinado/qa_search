@@ -5,27 +5,20 @@
 }
 
 .categories-list > li {
+  margin-bottom: 0.9em;
+  padding-left: 3rem;
+  line-height: 165%;
+  display: block;
   position: relative;
-  margin-bottom: .5em;
-  padding-left: 16px;
-}
-  
-.categories-list > li.children:before {
-  position: absolute;
-  left: 0;
-  top: 4px;
-  content: '\25B6';
-  font-size: .65em;
-  margin-right: 1.25em;
-  text-decoration: none;
 }
 
-.categories-list > li.no-children:before {
+.categories-list > li:before {
   position: absolute;
-  left: 0;
-  top: 2px;
-  content: '\25CF';
-  font-size: .85em;
-  margin-right: 1em;
+  left: 1.5rem;
+  top: 1px;
+  content: '\f061';
+  font-size: .9em;
+  margin-right: 1.25em;
   text-decoration: none;
+  font-family: FontAwesome;
 }

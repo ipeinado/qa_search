@@ -5,8 +5,8 @@
 function qa_search_permission() {
 	return array(
 		'view qa search' => array(
-			'title' => t('View Q&A Search Pages'),
-			'description' => t('View the Question and Answer search pages'),
+			'title' => t('View the Guided Shopping Pages'),
+			'description' => t('View the Guided Shopping pages'),
 		),
 	);
 }
@@ -17,9 +17,9 @@ function qa_search_permission() {
 function qa_search_menu() {
 	$items = array();
 
-	$items['qasearch'] = array(
+	$items['guided-shopping'] = array(
 		'title' => 'What is it that you are looking for?',
-		'description' => 'Home page for looking up using questions and answers',
+		'description' => 'Home page for guided search',
 		'page callback' => 'qa_main_page',
 		'access arguments' => array(
 			'view qa search',
@@ -27,7 +27,7 @@ function qa_search_menu() {
 		'file' => 'qa_search.main_page.inc',
 	);
 
-	$items['qasearch/%'] = array(
+	$items['guided-shopping/%'] = array(
 		'title' => 'Term page',
 		'description' => 'Terms with children',
 		'page callback' => 'qa_term_page',
@@ -68,6 +68,8 @@ function qa_search_theme($existing, $type, $theme, $path) {
 				'total_nodes' => NULL,
 				'question' => NULL,
 				'categories' => NULL,
+				'other' => NULL,
+				'term_name' => NULL,
 			),
 			'template' => 'term_page',
 			'path' => drupal_get_path('module', 'qa_search') . '/templates',
@@ -92,13 +94,19 @@ function qa_search_preprocess_category(&$variables) {
 	$url = _get_term_url($term);
 	$parent_id = key(taxonomy_get_parents($term->tid));
 	$variables['term_name'] = $term->name;
-	$variables['node_count'] = _count_nodes_by_term($term->tid);
+	if ($term->tid == 'fake') {
+		dpm($variables);
+		$variables['node_count'] = _count_nodes_by_term($term->tid);
+	}
+	else {
+		$variables['node_count'] = _count_nodes_by_term($term->tid);
+	}
+	
 	$variables['url'] = $url;
-	$variables['no_children'] = empty(taxonomy_get_children($term->tid));
 	$variables['short_description'] = $term->field_short_description['und'][0]['value'];
 
 	if (user_access('administer taxonomy')) {
-		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default btn-sm', 'style' => 'padding: 0 5px; margin-left: 0.5em;',), 'query' => array('destination' => '/qasearch/' . $parent_id),));
+		$variables['edit_term_link'] = l(t('Edit term'), $base_url . '/taxonomy/term/' . $term->tid . '/edit', array('attributes' => array('class' => 'btn btn-default btn-sm',), 'query' => array('destination' => '/guided-shopping/' . $parent_id),));
 	}
 }
 
@@ -106,7 +114,8 @@ function qa_search_preprocess_category(&$variables) {
 * Implements template_preprocess_page().
 */
 function qa_search_preprocess_page(&$variables) {
-	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__qasearch__%') {
+	
+	if (isset($variables['theme_hook_suggestions'][1]) && $variables['theme_hook_suggestions'][1] == 'page__guided_shopping__%') {
 		// $breadcrumb = $variables['page']['content']['system_main']['breadcrumb'];
 		// dsm($variables);
 
@@ -119,28 +128,13 @@ function qa_search_preprocess_page(&$variables) {
 }
 
 /* Auxiliary functions */
-function _get_recursive_url($term) {
-	$url_products = '';
-	$parents_ids = array();
-	$parents = taxonomy_get_parents_all($term->tid);
-	
-	foreach($parents as $parent) {
-		array_unshift($parents_ids, $parent->tid);
-	}
-	
-	foreach ($parents_ids as $parent_id) {
-		$url_products .= '&product_category=' . $parent_id;
-	}
-	
-	return '/search/power/#!/?page=1' . $url_products . '&query=';
-}
 
 function _get_term_url($term) {
 	if (empty(taxonomy_get_children($term->tid))) {
-		$url = _get_recursive_url($term);
+		$url = '/search?search_api_views_fulltext=&field_product_categories1[]=' . $term->tid . '&query=';
 		$no_children = true;
 	} else {
-		$url = '/qasearch/' . $term->tid;
+		$url = '/guided-shopping/' . $term->tid;
 		$no_children = false;
 	}
 
@@ -169,7 +163,7 @@ function _build_breadcrumb($term) {
 	$first_term = TRUE;
 
 	foreach($parents as $parent) {
-		$term_url = '/qasearch/' . $parent->tid;
+		$term_url = '/guided-shopping/' . $parent->tid;
 
 		if ($first_term) {
 			array_unshift($breadcrumb_array, $parent->name);
@@ -179,7 +173,7 @@ function _build_breadcrumb($term) {
 		}
 		
 	}
-	array_unshift($breadcrumb_array, l('Question & Answer Search', '/qasearch'));
+	array_unshift($breadcrumb_array, l('Guided Shopping', '/guided-shopping'));
 
 	return $breadcrumb_array;
 }

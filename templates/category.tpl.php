@@ -1,5 +1,6 @@
-<li class="<?php echo ($no_children ? 'no-children' : 'children') ?>" >
-<a href="<?php echo $url; ?>" title="<?php echo $short_description; ?>">
+<?php if ($node_count > 0): ?>
+<li>
+<a href="<?php echo $url; ?>">
 <?php echo $term_name; ?></a> 
 (<?php echo $node_count; ?>)
 <?php if (!empty($short_description)): ?>
@@ -9,3 +10,4 @@
 	<?php print $edit_term_link; ?>
 <?php endif; ?> 
 </li>
+<?php endif; ?> 

@@ -8,12 +8,14 @@ function qa_term_page($term) {
 
 	$nids = taxonomy_select_nodes($current_term_id, FALSE);
 
+	$exclude_terms = '';
 	foreach($subterms as $term) {
 		$subnids = taxonomy_select_nodes($term->tid, FALSE);
 		$nids = array_diff($nids, $subnids);
+		$exclude_terms .= '&field_product_categories1_1[]=' . $term->tid;
 	}
 
-	$total_url = _get_recursive_url($current_term);
+	//$total_url = _get_recursive_url($current_term);
 	$total_nodes = _count_nodes_by_term($current_term->tid);
 
 	$categories = array();
@@ -22,10 +24,11 @@ function qa_term_page($term) {
 		$categories[] = theme('category', array('term' => $term));
 	}
 
-	// Add page breadcrumb
-	// $breadcrumb = _build_breadcrumb($current_term);
-	// $breadcrumb = array('something', 'other thing');
-	// $content['breadcrumb'] = $breadcrumb;
+	$node_count = count($nids);
+	if ($node_count > 0) {
+		$other = t('<li> <a href="/search?search_api_views_fulltext=&field_product_categories1[]=' . $current_term->tid . $exclude_terms . '">Other</a> (' . $node_count . ') - Products in the  "' . $current_term->name . '" category that do not fit into one or more of the categories above</li>');
+	}
+	
 
 	// Add page title
 	drupal_set_title($current_term->name);
@@ -35,6 +38,20 @@ function qa_term_page($term) {
 		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-success',), 'query' => array('destination' => '/qasearch/' . $current_term->tid,)));
 	}
 
+	// this is kludgy, but we failed to get the markup right in the data entry phase 
+	// @@ Propose a cleanup pass to strip these variations (what kind, what sort, accommodation vs. accommodations)
+	
+	// find the last paragraph in the field
+	preg_match_all('#<p>.*</p>#',$question,$results);
+	$found_question = array_pop($results[0]);
+	// transform the paragraph into an h2
+	$orig = array('<p>', '</p>');
+	$new = array('<h2 class="guided">', '</h2>');
+	$formatted_question = str_replace($orig, $new, $found_question);
+
+	// swap the new h2 back into the field
+	$question = str_replace($found_question, $formatted_question, $question);
+
 	// Add content
 	$content['main_content'] = array(
 		'#theme' => 'qa_search_term_page',
@@ -43,16 +60,8 @@ function qa_term_page($term) {
 		'#total_nodes' => $total_nodes,
 		'#question' => $question,
 		'#categories' => $categories,
-	);
-
-	$node_count = count($nids);
-	$nodes = node_load_multiple($nids);
-	$others_title = t($node_count . ' products tagged only with "' . $current_term->name . '"');
-
-	$content['nodes'] = array(
-		'#theme' => 'qa_search_nodes',
-		'#title' => $others_title,
-		'#nodes' => $nodes,
+		'#other' => $other,
+		'#term_name' => $current_term->name,
 	);
 
 	return $content;

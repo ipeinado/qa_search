@@ -4,10 +4,11 @@
 	<div class="question"><?php echo $question; ?></div>
 <?php endif; ?>
 
-<p><strong><a href="<?php echo $total_url; ?>"><?php print t('Show me everything below'); ?></a></strong> (<?php echo $total_nodes; ?>)</p>
+<p class="showall"><strong><a href="<?php echo $total_url; ?>"><?php print t('Show all products in the ' . $term_name . ' category'); ?></a></strong> (<?php print $total_nodes ?>)</p>
 
 <ul class="categories-list">
 	<?php foreach($categories as $category): ?>
 		<?php print $category; ?>
 	<?php endforeach; ?>
+	<?php print $other; ?>
 </ul>

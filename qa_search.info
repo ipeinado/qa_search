@@ -1,5 +1,5 @@
-name = Question & Answer Search
-description = Search products in the GPII UL using guided questions
+name = Guided Shopping
+description = Search products in the GPII UL using guided questions. Formerly known as Q&A Search.
 core = 7.x
 
 dependencies[] = drupal:taxonomy
