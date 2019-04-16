@@ -15,7 +15,7 @@ function qa_term_page($term) {
 		$exclude_terms .= '&field_product_categories1_1[]=' . $term->tid;
 	}
 
-	//$total_url = _get_recursive_url($current_term);
+	$total_url = '/search?search_api_views_fulltext=&field_product_categories1[]=' . $current_term->tid;
 	$total_nodes = _count_nodes_by_term($current_term->tid);
 
 	$categories = array();
