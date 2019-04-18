@@ -131,7 +131,7 @@ function qa_search_preprocess_page(&$variables) {
 
 function _get_term_url($term) {
 	if (empty(taxonomy_get_children($term->tid))) {
-		$url = '/search?search_api_views_fulltext=&field_product_categories1[]=' . $term->tid;
+		$url = '/search?search_api_views_fulltext=&f[0]=field_product_categories:' . $term->tid;
 		$no_children = true;
 	} else {
 		$url = '/guided-shopping/' . $term->tid;
