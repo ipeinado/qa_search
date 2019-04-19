@@ -37,7 +37,7 @@ function qa_term_page($term) {
 
 	// Add edit link if user can administer taxonomy
 	if (user_access('administer taxonomy')) {
-		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-success',), 'query' => array('destination' => '/qasearch/' . $current_term->tid,)));
+		$edit_link = l(t('Edit term'), '/taxonomy/term/' . $current_term->tid . '/edit', array('attributes' => array('class' => 'btn btn-success',), 'query' => array('destination' => '/guided-shopping/' . $current_term->tid,)));
 	}
 
 	// // this is kludgy, but we failed to get the markup right in the data entry phase 
