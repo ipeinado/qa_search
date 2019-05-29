@@ -17,7 +17,7 @@ function qa_term_page($term) {
 		$exclude_terms .= '&field_product_categories1_1[]=' . $term->tid;
 	}
 
-	$total_url = '/search?search_api_views_fulltext=&f[0]=field_product_categories1:' . $current_term->tid;
+	$total_url = '/guided-shopping-search?search_api_views_fulltext=&f[0]=field_product_categories1:' . $current_term->tid;
 	$total_nodes = _count_nodes_by_term($current_term->tid);
 
 	$categories = array();
@@ -28,7 +28,7 @@ function qa_term_page($term) {
 
 	$node_count = count($nids);
 	if ($node_count > 0) {
-		$other = t('<li> <a href="/search?search_api_views_fulltext=&f[0]=field_product_categories1:' . $current_term->tid . '&field_product_categories1[]=' . $current_term->tid . $exclude_terms . '">Other</a> (' . $node_count . ') - Products in the  "' . $current_term->name . '" category that do not fit into one or more of the categories above</li>');
+		$other = t('<li> <a href="/guided-shopping-search?search_api_views_fulltext=&f[0]=field_product_categories1:' . $current_term->tid . '&field_product_categories1[]=' . $current_term->tid . $exclude_terms . '">Other</a> (' . $node_count . ') - Products in the  "' . $current_term->name . '" category that do not fit into one or more of the categories above</li>');
 	}
 	
 
